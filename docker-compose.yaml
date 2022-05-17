@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  postgresqldb:
+    container_name: database
+    image: postgres:9.6-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - scihub:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=scihub
+      - POSTGRES_USER=baggio
+      - POSTGRES_PASSWORD=baggio
+
+  backend:
+    container_name: sci-hub
+    image: baggio1103/sci-hub:1
+    links:
+      - postgresqldb
+    volumes:
+    - user_data_storage:/root/sci-hub/user
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresqldb/scihub
+      - SPRING_DATASOURCE_USERNAME=baggio
+      - SPRING_DATASOURCE_PASSWORD=baggio
+    ports:
+      - "8080:8080"
+volumes:
+  scihub:
+  user_data_storage:
